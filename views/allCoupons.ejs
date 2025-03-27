@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coupon Cards</title>
-    <link rel="stylesheet" href="/styles/card.css">
+    <link rel="stylesheet" href="/CSS/card.css">
 </head>
 <body>
     <!-- Include Header -->
@@ -18,7 +18,8 @@
                 <a href="/checkOut?id=<%= coupon.cid %>">
                     <div class="cards">
                         <div class="image">
-                            <img src="/photo/<%= coupon.jpg %>" alt="<%= coupon.title %>">
+                            
+                            <img src="/photo/<%= coupon.photo %>" alt="<%= coupon.title %>">
                         </div>
                         <div class="title">
                             <h2><%= coupon.title %></h2>

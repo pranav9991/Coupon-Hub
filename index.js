@@ -12,9 +12,11 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
+app.use(express.static('CouponHub/public'));
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(express.static(path.join(__dirname, "public"))); 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -73,8 +75,8 @@ app.get("/allCoupons", async (req, res) => {
   // Mock Data (Replace with Database Query)
   const coupons = [
       { cid: 1, title: "Domino's Discount", tc: "Get 20% off", photo: "dominos.png" },
-      { cid: 2, title: "Swiggy Deal", tc: "Rs. 100 Cashback", photo: "swiggy.png" },
-      { cid: 3, title: "Zomato Offer", tc: "Flat 30% off", photo: "zomato.jpg" }
+      { cid: 2, title: "Offer", tc: "Rs. 100 Cashback", photo: "images.png" },
+      { cid: 3, title: "Zomato Offer", tc: "Flat 30% off", photo: "noise.png" }
   ];
 
   res.render("allCoupons", { coupons });

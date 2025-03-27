@@ -51,8 +51,10 @@ nav ul{
   border: 2px solid transparent;
 }
 
+
+
 .search{
-    background:  url("../media/Master.jpg") ;
+    background:  url("../images/Master.jpg");
     height: 70vh;
     background-size: cover ;
     background-repeat: no-repeat;
