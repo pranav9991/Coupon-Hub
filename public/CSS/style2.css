@@ -8,7 +8,7 @@
 }
 .container{
 	/* background-image: url("../../media/bg2.jpg") no-repeat; */
-    background: url("../../images/bg2.jpg") no-repeat;
+    background: url("../../image/bg2.jpg") no-repeat;
     background-position: center;
     background-size: cover;
     min-height:100vh;
