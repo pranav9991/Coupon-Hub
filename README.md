@@ -54,7 +54,7 @@ Run the development server:
 bash
 Copy
 npm start
-Visit http://localhost:3000 in your browser to view the application locally.
+Visit http://localhost:8008 in your browser to view the application locally.
 
 Contributing
 If you'd like to contribute to Coupon Hub, feel free to fork the repository and submit a pull request. Here's a basic guide to contribute:
