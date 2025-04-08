@@ -2,9 +2,39 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const bodyParser = require("body-parser");
+const mongoose=require("mongoose");
+const couponLisitng=require('../CouponHub_/models/couponListing.js');
+
+const MONGOURL="mongodb://127.0.0.1:27017/CouponHub"
 
 const app = express();
 const PORT = 8008;
+
+main().then(()=>{
+  console.log("Database Connected");
+}).catch((err)=>{
+  console.log(err);
+  console.log("Error in Database Connection");
+})
+
+async function main() {
+  await mongoose.connect(MONGOURL);
+}
+
+app.get("/testcouponListing",async(req,res)=>{
+  let sampleListing=new couponLisitng({
+    code:"12we",
+    OrganizationName:"zomato",
+    Title:"50% off",
+    price:4,
+    date:"4/5/25",
+    image:"https://akm-img-a-in.tosshub.com/businesstoday/images/story/201711/zomato-fact-sheet_660_052417055850_111517063712.jpg",
+    TandC:"anyone can access",
+    
+  }) ;
+  await sampleListing.save();
+  console.log("Sample was saved");
+});
 
 // Middleware for session
 app.use(session({
