@@ -106,10 +106,10 @@ app.post("/validateUser", wrapAsync(async (req, res) => {
   }
 
   // Compare passwords
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(401).render("signin", { error: "Invalid email or password!" });
-  }
+  // const isMatch = await bcrypt.compare(password, user.password);
+  // if (!isMatch) {
+  //   return res.status(401).render("signin", { error: "Invalid email or password!" });
+  // }
 
   // Set session and redirect
   req.session.user = user;
@@ -135,7 +135,7 @@ app.post("/addUser", wrapAsync(async (req, res) => {
   }
 
   // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  // const hashedPassword = await bcrypt.hash(password, 10);
 
   // Create new user
   const newUser = new User({
