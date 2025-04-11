@@ -15,23 +15,27 @@
             <center><h1>No Coupons Available</h1></center>
         <% } else { %>
             <% coupons.forEach(coupon => { %>
-                <a href="/checkOut?id=<%= coupon.cid %>">
+                <a href="#">
                     <div class="cards">
                         <div class="image">
-                            
-                            <img src="/photo/<%= coupon.photo %>" alt="<%= coupon.title %>">
+                            <img src="<%= coupon.image %>" alt="<%= coupon.Title %>">
                         </div>
                         <div class="title">
-                            <h2><%= coupon.title %></h2>
+                            <h2><%= coupon.Title %></h2>
                         </div>
                         <div class="desc">
-                            <p><%= coupon.tc %></p>
+                            <p><strong><%= coupon.OrganizationName %></strong></p>
+                            <p><%= coupon.TandC %></p>
+                            <p>Code: <%= coupon.code %></p>
+                            <p>Price: $<%= coupon.price %></p>
                         </div>
                     </div>
                 </a>
             <% }); %>
         <% } %>
     </div>
+
+    <!-- Coupon Submission Form -->
 
     <!-- Include Footer -->
     <%- include("footer") %>

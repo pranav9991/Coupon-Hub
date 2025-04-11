@@ -12,6 +12,14 @@
     <!-- Include Header -->
     <%- include("header") %>
 
+    <% if (messages.error) { %>
+      <div class="alert alert-danger"><%= messages.error %></div>
+    <% } %>
+    <% if (messages.success) { %>
+      <div class="alert alert-success"><%= messages.success %></div>
+    <% } %>
+
+
     <section class="search">
         <form action="/search">
             <input class="searchBar" placeholder="Search Any Coupon Name or Organization..." type="search" name="search">
@@ -71,27 +79,36 @@
             <strong> Want to Contribute to Us?</strong>
         </div>
         <center>
-            <form action="/addCoupon" method="POST" enctype="multipart/form-data">
+            <form action="/allCoupons" method="POST" enctype="application/x-www-form-urlencoded">
                 <div class="formImage">
                     <a href="/">
-                        <img src="../image/logo.jpg" alt="Logo" width="200px">
+                        <img src="../image/logo.jpg" alt="logo" width="200px">
                     </a>
+
                 </div>
-                <input type="text" name="code" placeholder="Enter The Code" novalidate class="needs-validation" required> <br>
-                <input type="text" name="org" placeholder="Organization Name" novalidate class="needs-validation" requried > <br>
-                <input type="text" name="type" placeholder="Type of Coupon"> <br>
-                <input type="text" name="title" placeholder="Coupon Title"> <br>
-                <input type="number" name="price" placeholder="Coupon Price"> <br>
+                <!-- <input type="text" name="code" placeholder="Enter The Code"> <br> -->
+                <input type="text" id="code" name="code" required minlength="4" placeholder="Enter The Code"><br>
 
-                <input placeholder="Expiration Date" class="textbox-n" name="edate" id="edate" type="text"
-                    onfocus="(this.type='date')" onblur="(this.type='text')"> <br>
+                <!-- <input type="text" name="org" placeholder="Organization Name"> <br> -->
+                <input type="text" id="OrganizationName" name="OrganizationName" placeholder="Organization Name" required><br>
 
-                <input type="file" name="photo"> <br>
+                <!-- <input type="text" name="type" placeholder="Type of Coupon"> <br> -->
 
-                <textarea name="tc" id="tc" cols="30" rows="10" placeholder="Terms and Conditions"></textarea> <br>
+                <!-- <input type="text" name="title" placeholder="Coupon Title"> <br> -->
+                <input type="text" id="Title" name="Title"placeholder="Coupon Title"><br>
+                
+
+                <!-- <input type="number" name="price" placeholder="Coupon Price"> <br> -->
+                <input type="number" id="price" name="price" min="0" step="1" placeholder="Coupon Price"><br>
+
+                <input type="date" id="date" name="date" >
+                
+                <input type="url" id="image" name="image" placeholder="Url"><br>
+
+                <textarea cols="30" rows =" 10" id="TandC" name="TandC" placeholder="Terms and conditions"></textarea><br>
 
                 <input type="submit" value="Submit">
-            </form>
+                </form>
         </center>
     </section>
 

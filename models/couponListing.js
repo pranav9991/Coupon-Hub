@@ -1,18 +1,17 @@
 const mongoose=require("mongoose");
 const Schema=mongoose.Schema;
 const couponSchema=new Schema({
-    code:{
-        type:String,
-        requried:true,
-    },
+    code:String,
+
     OrganizationName: String,
     couponType: String,
     Title: String,
     price:Number,
-    Date:String,
+    date:Date,
     image:String,
     TandC:String,
 
+    
 });
 const CouponListing=mongoose.model("CouponListing",couponSchema);
-module.export=CouponListing;
+module.exports=CouponListing;

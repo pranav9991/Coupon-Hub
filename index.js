@@ -2,17 +2,21 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const bodyParser = require("body-parser");
-const mongoose=require("mongoose");
-const couponLisitng=require('../CouponHub_/models/couponListing.js');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const { userRegistrationSchema } = require("./schema.js");
+const couponListing = require('./models/couponListing.js');
+const User = require('./models/user.js');
 
-const MONGOURL="mongodb://127.0.0.1:27017/CouponHub"
+const wrapAsync = require("./utils/WrapAsync.js");
+const MONGOURL = "mongodb://127.0.0.1:27017/CouponHub"
 
 const app = express();
-const PORT = 8008;
+const PORT = process.env.PORT || 8000; // Fallback to env var or 8000
 
-main().then(()=>{
+main().then(() => {
   console.log("Database Connected");
-}).catch((err)=>{
+}).catch((err) => {
   console.log(err);
   console.log("Error in Database Connection");
 })
@@ -21,40 +25,34 @@ async function main() {
   await mongoose.connect(MONGOURL);
 }
 
-app.get("/testcouponListing",async(req,res)=>{
-  let sampleListing=new couponLisitng({
-    code:"12we",
-    OrganizationName:"zomato",
-    Title:"50% off",
-    price:4,
-    date:"4/5/25",
-    image:"https://akm-img-a-in.tosshub.com/businesstoday/images/story/201711/zomato-fact-sheet_660_052417055850_111517063712.jpg",
-    TandC:"anyone can access",
-    
-  }) ;
-  await sampleListing.save();
-  console.log("Sample was saved");
-});
-
-// Middleware for session
+// Middleware for session and flash messages
 app.use(session({
-    secret: "yourSecretKey", 
-    resave: false,
-    saveUninitialized: true
+  secret: "yourSecretKey", 
+  resave: false,
+  saveUninitialized: true
 }));
-app.use(express.static('CouponHub/public'));
+const flash = require('connect-flash');
+app.use(flash());
 
-// Middleware
+// Body parser middleware - must come before routes
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, "public"))); 
+app.use(express.static(path.join(__dirname, "public")));
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Routes
 app.get("/", (req, res) => {
-  res.render("index"); 
+  res.render("index", {
+    messages: {
+      error: req.flash("error"),
+      success: req.flash("success")
+    }
+  });
 });
+
 // Route: Sign In Page
 app.get("/signin", (req, res) => {
   res.render("signin", { user: req.session.user });
@@ -72,49 +70,162 @@ app.get("/signout", (req, res) => {
 });
 
 // Route: Validate User (Login Handling)
-app.post("/validateUser", (req, res) => {
-  const { Email, Password } = req.body;
-
-  // Hardcoded Example - Replace with Database Logic
-  if (Email === "user@example.com" && Password === "password123") {
-      req.session.user = Email; // Store user session
-      res.redirect("/"); // Redirect to homepage after login
-  } else {
-      res.render("signin", { user: null, error: "Invalid email or password!" });
+app.post("/validateUser", wrapAsync(async (req, res) => {
+  // Debug request headers and body
+  console.log('Headers:', req.headers);
+  console.log('Raw body:', req.body);
+  
+  // Ensure proper content-type
+  if (!req.is('application/json') && !req.is('application/x-www-form-urlencoded')) {
+    return res.status(400).render("signin", { 
+      error: "Invalid content type. Please use JSON or form data" 
+    });
   }
-});
-// Route: Sign Up Page
-app.get("/signup", (req, res) => {
-  res.render("signup");
-});
+
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return res.status(400).render("signin", { 
+      error: "Request body is missing or empty" 
+    });
+  }
+
+  const { error } = userLoginSchema.validate(req.body);
+  if (error) {
+    console.error('Validation error:', error.details);
+    return res.status(400).render("signin", { 
+      error: error.details[0].message 
+    });
+  }
+
+
+  const { email, password } = req.body;
+  
+  // Find user by email
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(401).render("signin", { error: "Invalid email or password!" });
+  }
+
+  // Compare passwords
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(401).render("signin", { error: "Invalid email or password!" });
+  }
+
+  // Set session and redirect
+  req.session.user = user;
+  res.redirect("/");
+}));
+
 // Route: Register User (Signup Handling)
-app.post("/addUser", (req, res) => {
-  const { Name, Email, Phone, Password, ConfirmPassword } = req.body;
-
-  if (Password !== ConfirmPassword) {
-      return res.send("Passwords do not match! <a href='/signup'>Try Again</a>");
+app.post("/addUser", wrapAsync(async (req, res) => {
+  if (!req.body) {
+    return res.status(400).json({ error: "Request body is missing" });
+  }
+  const { error } = userRegistrationSchema.validate(req.body);
+  if (error) {
+    return res.status(400).render("signup", { error: error.details[0].message });
   }
 
-  // Save user to database (Replace with actual DB logic)
-  console.log(`New User Registered: ${Name}, ${Email}, ${Phone}`);
-  req.session.user = Name; // Store user session
-  res.redirect("/"); // Redirect to homepage after signup
-});
-//get all couponss
+  const { name, email, phone, password } = req.body;
+  
+  // Check if user already exists
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return res.status(400).render("signup", { error: "Email already registered" });
+  }
+
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create new user
+  const newUser = new User({
+    name,
+    email,
+    phone,
+    password: hashedPassword
+  });
+
+  await newUser.save();
+  req.session.user = newUser;
+  res.redirect("/");
+}));
+
+// Get all coupons
 app.get("/allCoupons", async (req, res) => {
-  // Mock Data (Replace with Database Query)
-  const coupons = [
-      { cid: 1, title: "Domino's Discount", tc: "Get 20% off", photo: "dominos.png" },
-      { cid: 2, title: "Offer", tc: "Rs. 100 Cashback", photo: "images.png" },
-      { cid: 3, title: "Zomato Offer", tc: "Flat 30% off", photo: "noise.png" }
-  ];
-
-  res.render("allCoupons", { coupons });
+  try {
+    const coupons = await couponListing.find({});
+    res.render("allCoupons", { coupons });
+  } catch (error) {
+    console.error("Error fetching coupons:", error);
+    res.status(500).send("Error loading coupons");
+  }
 });
 
+app.post("/allCoupons", wrapAsync(async (req, res) => {
+  console.log('Raw coupon submission:', req.body);
+  
+  try {
+    const { code, OrganizationName, Title, price, date, image, TandC } = req.body;
+    
+    if (!code || !code.trim()) {
+      req.flash("error", "Coupon code is required");
+      return res.redirect("/allCoupons");
+    }
+
+    if (code.length < 4) {
+      req.flash("error", "Coupon code must be at least 4 characters");
+      return res.redirect("/allCoupons");
+    }
+
+    if (!OrganizationName) {
+      req.flash("error", "Organization name is required");
+      return res.redirect("/allCoupons");
+    }
+
+    const newCoupon = new couponListing({
+      code: code,
+      OrganizationName,
+      Title: Title || 'No title provided',
+      price: price || 0,
+      date: date || new Date().toISOString().split('T')[0],
+      image: image || 'https://via.placeholder.com/150',
+      TandC: TandC || 'No terms specified'
+    });
+
+    await newCoupon.save();
+    console.log('New coupon saved:', newCoupon);
+    req.flash("success", "Coupon submitted successfully!");
+    return res.redirect("/allCoupons");
+  } catch (err) {
+    console.error('Coupon submission error:', err);
+    req.flash("error", "Failed to save coupon. Please try again.");
+    return res.redirect("/allCoupons");
+  }
+}));
 
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
+
+// Start server with recursive port handling
+const startServer = (port) => {
+  const server = app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+ });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`Port ${port} is in use, trying port ${port + 1}...`);
+      startServer(port + 1);
+    } else {
+      console.error('Server error:', err);
+      process.exit(1);
+    }
+  });
+};
+
+// Start the server
+startServer(PORT);
