@@ -18,3 +18,12 @@
         }, false)
       })
   })()
+  document.querySelector('form').addEventListener('submit', function() {
+    const orgSelect = document.getElementById('OrganizationName');
+    const orgImages = {
+        Dominos: '/photos/dominos.png',
+        Swiggy: '/photos/swiggy.png',
+        // ... other organizations ...
+    };
+    document.getElementById('image').value = orgImages[orgSelect.value];
+});

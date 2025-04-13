@@ -9,6 +9,15 @@ header
     margin: 0;
 }
 
+.inputBox select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
 .alert {
     padding: 15px;
     margin: 10px 0;
@@ -28,6 +37,11 @@ header
     background-color: #d4edda;
     border-color: #c3e6cb;
 }
+/* Placeholder text styling */
+.inputBox select option[value=""][disabled] {
+  color: gray; /* "Select Organization" text color */
+}
+
 
 
 a{
@@ -174,7 +188,34 @@ nav ul{
 .m5{
   margin: 100px 30px;
 }
+.inputBox  {
+  width: 69%;
+  padding: 10px;
+  margin: 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  
+}
+/* Organization dropdown styling */
+.inputBox select {
+  color: black; /* Default text color */
+}
 
+/* Placeholder text styling */
+.inputBox select option[value=""][disabled] {
+  color: gray !important;
+}
+
+
+/* Selected option styling */
+.inputBox select option:checked {
+  color: black !important;
+}
+/* Placeholder text styling */
+.inputBox select option[value=""][disabled] {
+  color: gray; /* "Select Organization" text color */
+}
 .contribute form{
   margin-top: 70px;
   width:500px;

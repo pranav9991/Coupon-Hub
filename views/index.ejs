@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coupon Hub || Home</title>
-    <link rel="stylesheet" href="/CSS/style.css">
+    <link rel="stylesheet" href="../public/CSS/style.css">
     <!-- <link rel="stylesheet" href="/CSS/Event.css"> -->
 </head>
 
@@ -89,8 +89,20 @@
                 <!-- <input type="text" name="code" placeholder="Enter The Code"> <br> -->
                 <input type="text" id="code" name="code" required minlength="4" placeholder="Enter The Code"><br>
 
-                <!-- <input type="text" name="org" placeholder="Organization Name"> <br> -->
-                <input type="text" id="OrganizationName" name="OrganizationName" placeholder="Organization Name" required><br>
+                <select id="OrganizationName" name="OrganizationName" class="inputBox" required onchange="showOrgImage()">
+                    <option value="" disabled selected>Select Organization</option>
+                    <option value="Dominos">Dominos</option>
+                    <option value="Swiggy">Swiggy</option>
+                    <option value="Zomato">Zomato</option>
+                    <option value="Dell">Dell</option>
+                    <option value="One8">One8</option>
+                    <option value="Croma">Croma</option>
+                </select><br>
+                <div id="orgImageContainer" style="display:none; margin:10px 0;">
+                    <img id="orgImage" src="" alt="Organization Logo" style="max-width:200px; max-height:100px;">
+                </div>
+                <input type="hidden" id="image" name="image" value="">
+                
 
                 <!-- <input type="text" name="type" placeholder="Type of Coupon"> <br> -->
 
@@ -104,11 +116,12 @@
 
                 <input type="date" id="date" name="date" >
                 
-                <input type="url" id="image" name="image" placeholder="Url"><br>
+            
 
                 <textarea cols="30" rows =" 10" id="TandC" name="TandC" placeholder="Terms and conditions"></textarea><br>
                 <label for="is_reedemed">Reedemed</label>
                 <input type="checkbox" id="is_reedemed" name="is_reedemed"><br>
+                
 
                 <input type="submit" value="Submit">
                 </form>
@@ -117,6 +130,9 @@
 
     <!-- Include Footer -->
     <%- include("footer") %>
-    <script src="/js/script.js"></script>
+    <script src="../public/js/script.js"></script>
+   
+    
+    
 </body>
 </html>

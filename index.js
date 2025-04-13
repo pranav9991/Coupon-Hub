@@ -161,6 +161,7 @@ app.get("/allCoupons", async (req, res) => {
   }
 });
 
+
 app.post("/allCoupons", wrapAsync(async (req, res) => {
   console.log('Raw coupon submission:', req.body);
   
@@ -181,7 +182,14 @@ app.post("/allCoupons", wrapAsync(async (req, res) => {
       req.flash("error", "Organization name is required");
       return res.redirect("/allCoupons");
     }
-
+    const orgImages = {
+      Dominos: '/photos/dominos.png',
+      Swiggy: '/photos/swiggy.png',
+      Zomato: '/photos/zomato.jpg',
+      Dell: '/photos/dell.webp',
+      One8: '/photos/one8.jpg',
+      Croma: '/photos/croma.jpg'
+  };
     const newCoupon = new couponListing({
       code: code,
       OrganizationName,
@@ -189,7 +197,7 @@ app.post("/allCoupons", wrapAsync(async (req, res) => {
       discount:discount,
       price: price || 0,
       date: date || new Date().toISOString().split('T')[0],
-      image: image || 'https://via.placeholder.com/150',
+      image: orgImages[OrganizationName], // Save the corresponding image path
       TandC: TandC || 'No terms specified',
       is_redeemed:is_redeemed || 'off',
     });
