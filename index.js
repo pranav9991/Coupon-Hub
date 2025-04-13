@@ -160,7 +160,21 @@ app.get("/allCoupons", async (req, res) => {
     res.status(500).send("Error loading coupons");
   }
 });
-
+app.get("/search", wrapAsync(async (req, res) => {
+  const searchQuery = req.query.search;
+  try {
+      const coupons = await couponListing.find({
+          $or: [
+              { Title: { $regex: searchQuery, $options: 'i' } },
+              { OrganizationName: { $regex: searchQuery, $options: 'i' } }
+          ]
+      });
+      res.render("allCoupons", { coupons });
+  } catch (error) {
+      console.error("Error fetching coupons:", error);
+      res.status(500).send("Error loading coupons");
+  }
+}));
 
 app.post("/allCoupons", wrapAsync(async (req, res) => {
   console.log('Raw coupon submission:', req.body);
