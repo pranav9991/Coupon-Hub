@@ -165,7 +165,7 @@ app.post("/allCoupons", wrapAsync(async (req, res) => {
   console.log('Raw coupon submission:', req.body);
   
   try {
-    const { code, OrganizationName, Title, price, date, image, TandC } = req.body;
+    const { code, OrganizationName, Title,discount, price, date, image, TandC,is_redeemed } = req.body;
     
     if (!code || !code.trim()) {
       req.flash("error", "Coupon code is required");
@@ -186,10 +186,12 @@ app.post("/allCoupons", wrapAsync(async (req, res) => {
       code: code,
       OrganizationName,
       Title: Title || 'No title provided',
+      discount:discount,
       price: price || 0,
       date: date || new Date().toISOString().split('T')[0],
       image: image || 'https://via.placeholder.com/150',
-      TandC: TandC || 'No terms specified'
+      TandC: TandC || 'No terms specified',
+      is_redeemed:is_redeemed || 'off',
     });
 
     await newCoupon.save();
