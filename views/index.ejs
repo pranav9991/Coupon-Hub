@@ -26,6 +26,29 @@
             <button class="searchSubmit"><i class="sea fa-solid fa-magnifying-glass"></i></button>
         </form>
     </section>
+    <section class="recommendations">
+        <h3>Recommended For You</h3>
+        <% if (locals.recommendedCoupons && recommendedCoupons.length) { %>
+            <div class="coupon-grid">
+                <% recommendedCoupons.forEach(coupon => { %>
+                    <div class="coupon-card">
+                        <% if (coupon.image) { %>
+                            <img src="<%= coupon.image %>" alt="<%= coupon.OrganizationName %>">
+                        <% } %>
+                        <div class="coupon-info">
+                            <h4><%= coupon.Title %></h4>
+                            <p class="org"><%= coupon.OrganizationName %></p>
+                            <% if (coupon.discount) { %>
+                                <p class="discount"><%= coupon.discount %></p>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <p>Check out our latest coupons!</p>
+        <% } %>
+    </section>
 
     <!-- Collaboration Section -->
     <section class="bg-grey py-5">

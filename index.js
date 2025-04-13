@@ -44,14 +44,23 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Routes
-app.get("/", (req, res) => {
-  res.render("index", {
-    messages: {
-      error: req.flash("error"),
-      success: req.flash("success")
-    }
-  });
-});
+app.get("/", wrapAsync(async (req, res) => {
+  try {
+      // Get recommendations
+      const recommendedCoupons = await couponListing.aggregate([
+          { $match: { /* your filters */ } },
+          { $sample: { size: 5 } } // Get 5 random coupons for now
+      ]);
+      
+      res.render("index", { 
+          recommendedCoupons,
+          messages: req.flash()
+      });
+  } catch (error) {
+      console.error("Error loading home page:", error);
+      res.status(500).send("Error loading page");
+  }
+}));
 
 // Route: Sign In Page
 app.get("/signin", (req, res) => {
@@ -227,6 +236,40 @@ app.post("/allCoupons", wrapAsync(async (req, res) => {
   }
 }));
 
+app.get("/recommend", wrapAsync(async (req, res) => {
+  try {
+      // Get user's browsing history (you'll need to implement this)
+      // const userId = req.user?.id; // If you have user authentication
+      
+      // Advanced recommendations based on multiple factors
+      const recommendedCoupons = await couponListing.aggregate([
+          {
+              $match: {
+                  // Add any filters here (e.g., valid dates)
+                  // date: { $gte: new Date() }
+              }
+          },
+          {
+              $addFields: {
+                  popularityScore: {
+                      $add: [
+                          { $multiply: [{ $toInt: "$is_redeemed" }, 5] }, // Redeemed coupons get higher score
+                          { $cond: [{ $eq: ["$OrganizationName", "Dominos"] }, 2, 0] }, // Example: boost Dominos
+                          { $cond: [{ $eq: ["$couponType", "Food"] }, 1, 0] } // Example: boost Food category
+                      ]
+                  }
+              }
+          },
+          { $sort: { popularityScore: -1, date: -1 } },
+          { $limit: 5 }
+      ]);
+      
+      res.render("index", { recommendedCoupons });
+  } catch (error) {
+      console.error("Error fetching recommendations:", error);
+      res.status(500).send("Error loading recommendations");
+  }
+}));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

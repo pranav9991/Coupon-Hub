@@ -374,6 +374,65 @@ th, td {
   margin-bottom: 10px;
   cursor: pointer;
 }
+.recommendations {
+  margin: 2rem 0;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.coupon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.coupon-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.coupon-card:hover {
+  transform: translateY(-5px);
+}
+
+.coupon-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.coupon-info {
+  padding: 1rem;
+}
+
+.coupon-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.coupon-info .org {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.coupon-info .discount {
+  color: #e63946;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.coupon-info .expiry {
+  color: #999;
+  font-size: 0.8rem;
+  margin: 0.5rem 0 0 0;
+}
 
 .footer .footer_top .footer_item p.title span {
   display: block;
