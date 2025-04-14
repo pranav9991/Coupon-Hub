@@ -2,7 +2,42 @@ header
 {
 	background-color:white !important;
 	margin-bottom:5px;
-	 
+}
+
+/* Search Container Styles */
+.search-container {
+    padding: 20px;
+    text-align: center;
+    background-color: #f8f9fa;
+    margin-bottom: 20px;
+}
+
+.search-container form {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-container input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    font-size: 16px;
+}
+
+.search-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.search-container button:hover {
+    background-color: #0069d9;
 }
 *{
     padding: 0;

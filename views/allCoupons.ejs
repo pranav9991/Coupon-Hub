@@ -15,7 +15,7 @@
             <center><h1>No Coupons Available</h1></center>
         <% } else { %>
             <% coupons.forEach(coupon => { %>
-                <a href="#">
+                <a href="/coupons/<%= coupon._id %>">
                     <div class="cards">
                         <div class="image">
                             <img src="<%= coupon.image %>" alt="<%= coupon.Title %>">

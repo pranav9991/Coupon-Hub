@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coupon Hub || Home</title>
-    <link rel="stylesheet" href="../public/CSS/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <!-- <link rel="stylesheet" href="/CSS/Event.css"> -->
 </head>
 
@@ -105,14 +105,14 @@
             <form action="/allCoupons" method="POST" enctype="application/x-www-form-urlencoded">
                 <div class="formImage">
                     <a href="/">
-                        <img src="../image/logo.jpg" alt="logo" width="200px">
+                        <img src="/image/logo.jpg" alt="logo" width="200px">
                     </a>
 
                 </div>
                 <!-- <input type="text" name="code" placeholder="Enter The Code"> <br> -->
                 <input type="text" id="code" name="code" required minlength="4" placeholder="Enter The Code"><br>
 
-                <select id="OrganizationName" name="OrganizationName" class="inputBox" required onchange="showOrgImage()">
+                <select id="organizationName" name="organizationName" class="inputBox" required onchange="showOrgImage()">
                     <option value="" disabled selected>Select Organization</option>
                     <option value="Dominos">Dominos</option>
                     <option value="Swiggy">Swiggy</option>
@@ -125,7 +125,7 @@
                     <img id="orgImage" src="" alt="Organization Logo" style="max-width:200px; max-height:100px;">
                 </div>
                 <input type="hidden" id="image" name="image" value="">
-                
+                <input type="text" id="category"name="category" placeholder="Enter category" >
 
                 <!-- <input type="text" name="type" placeholder="Type of Coupon"> <br> -->
 
@@ -137,13 +137,13 @@
                 <!-- <input type="number" name="price" placeholder="Coupon Price"> <br> -->
                 <input type="number" id="price" name="price" min="0" step="1" placeholder="Coupon Price"><br>
 
-                <input type="date" id="date" name="date" >
+                <input type="date" id="date" name="expiry" >
                 
             
 
-                <textarea cols="30" rows =" 10" id="TandC" name="TandC" placeholder="Terms and conditions"></textarea><br>
-                <label for="is_reedemed">Reedemed</label>
-                <input type="checkbox" id="is_reedemed" name="is_reedemed"><br>
+                <textarea cols="30" rows =" 10" id="description" name="description" placeholder="Enter description"></textarea><br>
+                <!-- <label for="is_reedemed">Reedemed</label> -->
+                <!-- <input type="checkbox" id="is_reedemed" name="is_reedemed"><br> -->
                 
 
                 <input type="submit" value="Submit">
@@ -153,7 +153,7 @@
 
     <!-- Include Footer -->
     <%- include("footer") %>
-    <script src="../public/js/script.js"></script>
+    <script src="/js/script.js"></script>
    
     
     

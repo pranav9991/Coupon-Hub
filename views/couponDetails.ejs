@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= coupon.Title %> - Coupon Details</title>
+    <link rel="stylesheet" href="/CSS/style.css">
+    <link rel="stylesheet" href="/CSS/couponDetails.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <%- include('header') %>
+    <main class="coupon-details-container">
+        <div class="coupon-card">
+            <div class="coupon-header">
+                <img src="<%= coupon.image %>" alt="<%= coupon.organizationName %> logo" class="coupon-logo">
+                <h1><%= coupon.Title %></h1>
+            </div>
+            <div class="coupon-body">
+                <div class="coupon-info">
+                    <p class="organization"><%= coupon.organizationName %></p>
+                    <p class="discount"><span><%= coupon.discount %>% OFF</span></p>
+                    <p class="code">Code: <span><%= coupon.code %></span></p>
+                    <p class="expiry">Valid until: <%= coupon.expiry %></p>
+                    <p class="description"><%= coupon.description %></p>
+                </div>
+                <div class="coupon-actions">
+                    <button id="buyNowBtn" class="btn-primary" data-coupon-id="<%= coupon._id %>">Buy Now - ₹<%= coupon.price %></button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <%- include('footer') %>
+    <script src="/js/script.js"></script>
+</body>
+</html>

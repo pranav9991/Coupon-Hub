@@ -1,15 +1,16 @@
 const mongoose=require("mongoose");
 const Schema=mongoose.Schema;
 const couponSchema=new Schema({
+
     code:String,
-    OrganizationName: String,
-    couponType: String,
+    organizationName: String,
+    category: String,
     Title: String,
     discount:String,
     price:Number,
-    date:Date,
+    expiry:Date,
     image:String,
-    TandC:String,
+    description:String,
     is_redeemed:String,
 
     
