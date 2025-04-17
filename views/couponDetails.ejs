@@ -25,12 +25,17 @@
                     <p class="description"><%= coupon.description %></p>
                 </div>
                 <div class="coupon-actions">
-                    <button id="buyNowBtn" class="btn-primary" data-coupon-id="<%= coupon._id %>">Buy Now - ₹<%= coupon.price %></button>
+                    
+                    <form action="/coupons/<%= coupon._id %>/purchase" method="POST">
+                        <button type="submit" class="btn-primary">Buy Now - ₹<%= coupon.price %></button>
+                    </form>
                 </div>
             </div>
         </div>
     </main>
     <%- include('footer') %>
-    <script src="/js/script.js"></script>
+    <script>
+        
+    </script>
 </body>
 </html>

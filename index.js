@@ -305,7 +305,8 @@ app.post("/addUser", wrapAsync(async (req, res) => {
 // Get all coupons
 app.get("/allCoupons", async (req, res) => {
   try {
-    const coupons = await couponListing.find({});
+    const coupons = await couponListing.find({ is_redeemed: { $ne: 'off' } });
+
     res.render("allCoupons", { coupons });
   } catch (error) {
     console.error("Error fetching coupons:", error);
@@ -328,31 +329,7 @@ app.get("/coupons/:id", async (req, res) => {
 });
 
 // Handle coupon purchase with enhanced logging
-app.post("/coupons/:id/purchase", wrapAsync(async (req, res) => {
-  try {
-    console.log(`[${new Date().toISOString()}] Purchase attempt for coupon ${req.params.id}`);
-    console.debug('Purchase request from:', req.ip);
-    console.debug('User agent:', req.headers['user-agent']);
-    
-    const coupon = await couponListing.findById(req.params.id);
-    if (!coupon) {
-      return res.status(404).json({ success: false, message: "Coupon not found" });
-    }
 
-    if (coupon.is_redeemed === 'on') {
-      return res.status(400).json({ success: false, message: "Coupon already redeemed" });
-    }
-
-    // Mark coupon as redeemed
-    coupon.is_redeemed = 'on';
-    await coupon.save();
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error("Error processing purchase:", error);
-    res.status(500).json({ success: false, message: "Error processing purchase" });
-  }
-}));
 app.get("/search", wrapAsync(async (req, res) => {
   const searchQuery = req.query.search;
   try {
@@ -416,7 +393,7 @@ app.post("/allCoupons", wrapAsync(async (req, res) => {
       expiry: expiry || new Date(Date.now() + 30*24*60*60*1000), // Default: 30 days from now
       image: orgImages[organizationName] || '/photos/default.png',
       description: description?.trim() || 'No terms specified',
-      is_redeemed: 'off'
+      is_redeemed: 'on'
     });
 
     // Validate before saving
@@ -537,5 +514,124 @@ const startServer = (port) => {
   });
 };
 
+
+const axios = require('axios'); // Ensure axios is installed
+
+// Chatbot API URL
+const CHATBOT_API_URL = 'http://127.0.0.1:5000/chatbot';
+
+// Chatbot Route - Render Chat Interface
+app.get("/chatbot", wrapAsync(async (req, res) => {
+  // Initialize session messages if not present
+  if (!req.session.chatMessages) {
+    req.session.chatMessages = [];
+  }
+  res.render("chatbot", {
+    messages: req.session.chatMessages,
+    flashMessages: req.flash()
+  });
+}));
+
+// Chatbot Route - Handle User Message
+app.post("/chatbot", wrapAsync(async (req, res) => {
+  const userInput = req.body.message;
+  if (!userInput || !userInput.trim()) {
+    req.flash('error', 'Please enter a message.');
+    return res.redirect('/chatbot');
+  }
+
+  // Initialize session messages if not present
+  if (!req.session.chatMessages) {
+    req.session.chatMessages = [];
+  }
+
+  // Add user message
+  req.session.chatMessages.push({ role: 'user', content: userInput });
+
+  // Call Flask API
+  try {
+    const response = await axios.post(CHATBOT_API_URL, { message: userInput }, { timeout: 5000 });
+    const botReply = response.data.response || 'Sorry, I couldn’t process that request.';
+    req.session.chatMessages.push({ role: 'assistant', content: botReply });
+  } catch (error) {
+    console.error('Chatbot API error:', error);
+    req.session.chatMessages.push({ role: 'assistant', content: 'Error: Could not connect to the chatbot server.' });
+  }
+
+  res.redirect('/chatbot');
+}));
+
+
+// Handle coupon purchase
+// Handle coupon purchase
+// Handle coupon purchase
+// SERVER SIDE ROUTE
+app.post("/coupons/:id/purchase", wrapAsync(async (req, res) => {
+  try {
+    console.log(`[${new Date().toISOString()}] Purchase attempt for coupon ${req.params.id}`);
+    console.log('Request details:', {
+      ip: req.ip,
+      userAgent: req.headers['user-agent']
+    });
+
+    // Validate coupon ID
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      console.warn('Invalid coupon ID:', req.params.id);
+      req.flash('error', 'Invalid coupon ID');
+      return res.redirect('/allCoupons');
+    }
+
+    // Query coupon
+    const coupon = await couponListing.findById(req.params.id);
+    console.log('Coupon found:', coupon ? 'Yes' : 'No');
+    
+    if (!coupon) {
+      console.warn('Coupon not found:', req.params.id);
+      req.flash('error', 'Coupon not found');
+      return res.redirect('/allCoupons');
+    }
+
+    console.log('Redemption status check - is_redeemed:', coupon.is_redeemed);
+    
+    // Fix the inverted logic: Assuming 'off' means "redeemed" in your system
+    if (coupon.is_redeemed === 'off') {
+      console.log('Coupon already redeemed');
+      req.flash('error', 'This coupon has already been redeemed');
+      return res.redirect(`/coupons/${req.params.id}`);
+    }
+
+    // Mark as redeemed
+    console.log('Marking coupon as redeemed...');
+    coupon.is_redeemed = 'off';
+    await coupon.save();
+    console.log('Coupon marked as redeemed successfully');
+
+    // Use redirect instead of render to avoid potential template issues
+    console.log('Redirecting to confirmation page...');
+    return res.render('purchaseConfirmation', { coupon });
+    
+  } catch (error) {
+    console.error('Error processing purchase:', error.message, error.stack);
+    req.flash('error', 'Error processing purchase: ' + error.message);
+    return res.redirect(`/coupons/${req.params.id}`);
+  }
+}));
+
+// Add a new route to handle the confirmation page
+app.get('/purchase-confirmation/:id', wrapAsync(async (req, res) => {
+  try {
+    const coupon = await couponListing.findById(req.params.id);
+    console.log(coupon)
+    if (!coupon) {
+      req.flash('error', 'Coupon not found');
+      return res.redirect('/allCoupons');
+    }
+    return res.render('purchaseConfirmation', { coupon });
+  } catch (error) {
+    console.error('Error displaying confirmation:', error.message, error.stack);
+    req.flash('error', 'Error displaying confirmation: ' + error.message);
+    return res.redirect('/allCoupons');
+  }
+}));
 // Start the server
 startServer(PORT);
